@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.hctech2006.hotellist.mapper.NlTemplateMapper">
+  <resultMap id="BaseResultMap" type="cn.hctech2006.hotellist.bean.NlTemplate">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="template_id" jdbcType="VARCHAR" property="templateId" />
+    <result column="hotel_id" jdbcType="VARCHAR" property="hotelId" />
+    <result column="floor_price" jdbcType="DOUBLE" property="floorPrice" />
+    <result column="house_type" jdbcType="VARCHAR" property="houseType" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from nl_template
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
+
+    insert into nl_template (id, template_id, hotel_id, 
+      floor_price, house_type, del_flag
+      )
+    values (#{id,jdbcType=INTEGER}, #{templateId,jdbcType=VARCHAR}, #{hotelId,jdbcType=VARCHAR}, 
+      #{floorPrice,jdbcType=DOUBLE}, #{houseType,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
+    update nl_template
+    set template_id = #{templateId,jdbcType=VARCHAR},
+      hotel_id = #{hotelId,jdbcType=VARCHAR},
+      floor_price = #{floorPrice,jdbcType=DOUBLE},
+      house_type = #{houseType,jdbcType=VARCHAR},
+      del_flag = #{delFlag,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, template_id, hotel_id, floor_price, house_type, del_flag
+    from nl_template
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, template_id, hotel_id, floor_price, house_type, del_flag
+    from nl_template
+  </select>
+  <select id="selectTemplateByKeyword" parameterType="list" resultMap="BaseResultMap">
+    select
+
+        id, template_id, hotel_id, floor_price, house_type, del_flag
+    from nl_template where 1=1
+    <if test="hotelId != null and hotelId != ''">
+      and hotel_id=#{hotelId}
+    </if>
+    <if test="delFlag != null and delFlag != ''">
+      and del_flag=#{delFlag}
+    </if>
+  </select>
+  <select id="selectByTemplateId" parameterType="String" resultMap="BaseResultMap">
+    select
+        id, template_id, hotel_id, floor_price, house_type, del_flag
+    from nl_template where template_id#{templateId}
+  </select>
+  <update id="updateByTemplateId" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
+    update nl_template
+    set
+        <if test="hotelId != null and hotelId != ''">
+          hotel_id = #{hotelId,jdbcType=VARCHAR},
+        </if>
+        <if test="floorPrice != null and floorPrice != ''">
+          floor_price = #{floorPrice,jdbcType=DOUBLE},
+        </if>
+        <if test="houseType != null and houseType != ''">
+          house_type = #{houseType,jdbcType=VARCHAR},
+        </if>
+        <if test="delFlag != null and delFlag != ''">
+          del_flag = #{delFlag,jdbcType=VARCHAR},
+        </if>
+          template_id = #{templateId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+
+  </update>
+</mapper>
