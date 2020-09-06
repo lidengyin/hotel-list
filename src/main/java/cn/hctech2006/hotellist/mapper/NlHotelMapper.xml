@@ -5,6 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="hotel_id" jdbcType="VARCHAR" property="hotelId" />
     <result column="hotel_reference" jdbcType="VARCHAR" property="hotelReference" />
+    <result column="hotel_name" jdbcType="VARCHAR" property="hotelName" />
     <result column="hotel_city" jdbcType="VARCHAR" property="hotelCity" />
     <result column="hotel_address" jdbcType="VARCHAR" property="hotelAddress" />
     <result column="hotel_phone" jdbcType="VARCHAR" property="hotelPhone" />
@@ -15,25 +16,23 @@
     <result column="hotel_status" jdbcType="VARCHAR" property="hotelStatus" />
     <result column="contract" jdbcType="VARCHAR" property="contract" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from nl_hotel
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="cn.hctech2006.hotellist.bean.NlHotel">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="cn.hctech2006.hotellist.bean.NlHotel">
     insert into nl_hotel (id, hotel_id, hotel_reference, 
       hotel_city, hotel_address, hotel_phone, 
       abut_manager, abut_manager_phone, sales_manager, 
       operation, hotel_status, contract, 
-      remark)
+      remark, hotel_name)
     values (#{id,jdbcType=INTEGER}, #{hotelId,jdbcType=VARCHAR}, #{hotelReference,jdbcType=VARCHAR}, 
       #{hotelCity,jdbcType=VARCHAR}, #{hotelAddress,jdbcType=VARCHAR}, #{hotelPhone,jdbcType=VARCHAR}, 
       #{abutManager,jdbcType=VARCHAR}, #{abutManagerPhone,jdbcType=VARCHAR}, #{salesManager,jdbcType=VARCHAR}, 
       #{operation,jdbcType=VARCHAR}, #{hotelStatus,jdbcType=VARCHAR}, #{contract,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR})
+      #{remark,jdbcType=VARCHAR},#{hotelName,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="cn.hctech2006.hotellist.bean.NlHotel">
     update nl_hotel
@@ -48,18 +47,84 @@
       operation = #{operation,jdbcType=VARCHAR},
       hotel_status = #{hotelStatus,jdbcType=VARCHAR},
       contract = #{contract,jdbcType=VARCHAR},
-      remark = #{remark,jdbcType=VARCHAR}
+      remark = #{remark,jdbcType=VARCHAR},
+        hotel_name=#{hotelName, jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select id, hotel_id, hotel_reference, hotel_city, hotel_address, hotel_phone, abut_manager, 
-    abut_manager_phone, sales_manager, operation, hotel_status, contract, remark
+    abut_manager_phone, sales_manager, operation, hotel_status, contract, remark, hotel_name
     from nl_hotel
     where id = #{id,jdbcType=INTEGER}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select id, hotel_id, hotel_reference, hotel_city, hotel_address, hotel_phone, abut_manager, 
-    abut_manager_phone, sales_manager, operation, hotel_status, contract, remark
+    abut_manager_phone, sales_manager, operation, hotel_status, contract, remark, hotel_name
     from nl_hotel
+  </select>
+  <select id="selectByHotelId" parameterType="String" resultMap="BaseResultMap">
+    select
+     id, hotel_id, hotel_reference, hotel_city, hotel_address, hotel_phone, abut_manager, abut_manager_phone, sales_manager, operation, hotel_status,
+           contract, remark, hotel_name
+    from nl_hotel where hotel_id=#{hotelId}
+  </select>
+  <select id="selectByKeyword" parameterType="list" resultMap="BaseResultMap">
+    select
+        id, hotel_id, hotel_name, hotel_reference, hotel_city, hotel_address, hotel_phone, abut_manager, abut_manager_phone, sales_manager, operation, hotel_status, contract, remark
+    from nl_hotel where 1=1
+    <if test="hotelName != null and hotelName != ''">
+        and hotel_name like CONCAT('%', #{hotelName}, '%')
+    </if>
+    <if test="hotelCity != null and hotelCity != ''">
+      and hotel_city like CONCAT('%', #{hotelCity}, '%')
+    </if>
+    <if test="hotelStatus != null and hotelStatus != ''">
+      and hotel_status=#{hotelStatus}
+    </if>
+  </select>
+  <update id="updateByHotelId" parameterType="cn.hctech2006.hotellist.bean.NlHotel">
+    update nl_hotel
+    set
+
+        <if test="hotelReference != null and hotelReference != ''">
+          hotel_reference = #{hotelReference,jdbcType=VARCHAR},
+        </if>
+        <if test="hotelCity != null and hotelCity != ''">
+          hotel_city = #{hotelCity,jdbcType=VARCHAR},
+        </if>
+        <if test="hotelAddress != null and hotelAddress !=''">
+          hotel_address = #{hotelAddress,jdbcType=VARCHAR},
+        </if>
+        <if test="hotelPhone != null and hotelPhone != ''">
+          hotel_phone = #{hotelPhone,jdbcType=VARCHAR},
+        </if>
+        <if test="abutManager != null and abutManager != ''">
+          abut_manager = #{abutManager,jdbcType=VARCHAR},
+        </if>
+        <if test="abutManagerPhone != null and abutManagerPhone != ''">
+          abut_manager_phone = #{abutManagerPhone,jdbcType=VARCHAR},
+        </if>
+        <if test="salesManager != null and salesManager != ''">
+          sales_manager = #{salesManager,jdbcType=VARCHAR},
+        </if>
+        <if test="operation != null and operation != ''">
+          operation = #{operation,jdbcType=VARCHAR},
+        </if>
+        <if test="hotelStatus != null and hotelStatus != ''">
+          hotel_status = #{hotelStatus,jdbcType=VARCHAR},
+        </if>
+        <if test="contract != null and contract != ''">
+          contract = #{contract,jdbcType=VARCHAR},
+        </if>
+        <if test="remark != null and remark != ''">
+          remark = #{remark,jdbcType=VARCHAR},
+        </if>
+        <if test="hotelName != null and hotelName != ''">
+          hotel_name=#{hotelName, jdbcType=VARCHAR},
+        </if>
+        hotel_id=#{hotelId}
+  </update>
+  <select id="selectHotelCity" resultType="String">
+    select hotel_city from nl_hotel
   </select>
 </mapper>

@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
-
 import javax.servlet.http.HttpSession;
-
 /**
  * 前台用户接口设计－控制层
  * Created by Lidengyin
@@ -88,23 +86,29 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(type = "query", name = "username", value = "用户名", required = true),
             @ApiImplicitParam(type = "query", name = "password", value = "密码", required = true),
-            @ApiImplicitParam(type = "query", name = "email", value = "邮箱", required = true),
-            @ApiImplicitParam(type = "query", name = "phone", value = "电话", required = true),
-            @ApiImplicitParam(type = "query", name = "question", value = "找回密码问题", required = true),
-            @ApiImplicitParam(type = "query", name = "answer", value = "找回密码答案", required = true)
+            @ApiImplicitParam(type = "query", name = "role", value = "注册类型, 0是普通员工, 1是管理员", required = true, defaultValue = "0"),
     })
     @RequestMapping(value = "register.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> registry(String username, String password, String email, String phone, String question, String answer){
-        MmallUser user = new MmallUser();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEmail(email);
-        user.setQuestion(question);
-        user.setAnswer(answer);
-        //user.setPassword(phone);
-        System.out.println("password:"+password);
-        return userService.registry(user);
+    public ServerResponse<String> registry(HttpSession session, String username, String password, String role){
+        //判断用户是否登录
+        MmallUser user = (MmallUser) session.getAttribute(Const.CURRENT_USER);
+        if (user == null){
+            return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(),"用户未登录");
+        }
+        //判断用户是否是管理员
+        if (userService.checkAdminRole(user).isSuccess()){
+            user.setRole(Integer.parseInt(role));
+            MmallUser user1 = new MmallUser();
+            user1.setUsername(username);
+            user1.setPassword(password);
+            //user.setPassword(phone);
+            System.out.println("password:"+password);
+            return userService.registry(user1);
+        }else {
+            return ServerResponse.createByError("权限不足，请向上级申请");
+        }
+
     }
 
     /**

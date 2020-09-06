@@ -28,8 +28,17 @@ public class NlHotel implements Serializable {
     private String contract;
 
     private String remark;
+    private String hotelName;
 
     private static final long serialVersionUID = 1L;
+
+    public String getHotelName() {
+        return hotelName;
+    }
+
+    public void setHotelName(String hotelName) {
+        this.hotelName = hotelName;
+    }
 
     public Integer getId() {
         return id;

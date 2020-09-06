@@ -1,6 +1,5 @@
 package cn.hctech2006.hotellist.service.impl;
 
-import cn.hctech2006.hotellist.bean.MmallUser;
 import cn.hctech2006.hotellist.bean.NlHandler;
 import cn.hctech2006.hotellist.bean.NlOrder;
 import cn.hctech2006.hotellist.common.ServerResponse;
@@ -119,47 +118,165 @@ public class OrderServiceImpl {
      * 订单修改
      * @param params
      */
-    public ServerResponse update_order(NlOrder params){
+    public ServerResponse update_order(NlOrder params) {
         //TODO 判断删除标志是否不合法
-        System.out.println("delFlag: "+params.getDelFlag());
-        if (params.getDelFlag() != null && !params.getDelFlag().equals("1") && !params.getDelFlag().equals("0")) return ServerResponse.createByError("删除标志只能是0或者1");
+        System.out.println("delFlag: " + params.getDelFlag());
+        if (params.getDelFlag() != null && !params.getDelFlag().equals("1") && !params.getDelFlag().equals("0"))
+            return ServerResponse.createByError("删除标志只能是0或者1");
         //todo 判断唯一标示是否为空
         String orderId = params.getOrderId();
-        if (orderId==null || orderId == "") return ServerResponse.createByError("订单唯一标识不能为空");
+        if (orderId == null || orderId == "") return ServerResponse.createByError("订单唯一标识不能为空");
         NlOrder order = orderMapper.selectByOrderId(orderId);
         //todo 判断订单是否存在
         if (order == null) return ServerResponse.createByError("订单不存在请重新确认订单编号");
         //todo 判断订单底价是否修改, 如果修改,则继续判断卖价是否修改
-        if (params.getFloorPrice() != null){
-            if (params.getSellingPrice() != null) params.setGrossMargin(params.getSellingPrice()-params.getFloorPrice());
-            else params.setGrossMargin(order.getSellingPrice()-params.getFloorPrice());
+        if (params.getFloorPrice() != null) {
+            if (params.getSellingPrice() != null)
+                params.setGrossMargin(params.getSellingPrice() - params.getFloorPrice());
+            else params.setGrossMargin(order.getSellingPrice() - params.getFloorPrice());
         }
         //todo 修改结果
         int result = orderMapper.updateByOrderId(params);
         if (result > 0) {
-            String handlerContent = params.getHandler()+"在"+sdf.format(new Date())+",修改了这条记录";
-            if (params.getOperation() != null) handlerContent+=",修改了运营人员";
-            if(params.getSalesManager() != null) handlerContent+=", 修改了销售经理";
-            if (params.getOrderStatus() != null) handlerContent+=",修改了订单状态";
-            if(params.getGrossMargin() != null) handlerContent+=", 修改了毛利";
-            if (params.getSellingPrice() != null) handlerContent+=",修改了总金额";
-            if(params.getFloorPrice() != null) handlerContent+=", 修改了底价";
-            if (params.getCheckInPerson() != null) handlerContent+=",修改了入住者";
-            if(params.getCheckOutDate() != null) handlerContent+=", 修改了退房时间";
-            if (params.getCheckInDate() != null) handlerContent+=",修改了入住时间";
-            if(params.getChannel() != null) handlerContent+=", 修改了渠道";
-            if (params.getTargetDate() != null) handlerContent+=",修改了预订日期";
-            if(params.getHotelName() != null) handlerContent+=", 修改了酒店名";
-            if(params.getOrderReference() != null) handlerContent+=", 修改了导入订单编号";
-            if(params.getHouseType() != null) handlerContent+=", 修改了房型";
-            if(params.getInvoiceTitle() != null) handlerContent+=", 修改了发票抬头";
-            if(params.getDutyParagraph() != null) handlerContent+=", 修改了税号";
-            if(params.getDelFlag() != null) handlerContent+=", 修改了删除标志";
-            params.setHandlerContent(handlerContent);
-            ServerResponse response = handlerService.uploadHandler(params.getOrderId(), params.getHandler(), params.getHandlerContent());
-            return ServerResponse.createBySuccess("修改成功");
-        }
-        else return ServerResponse.createByError("修改失败");
+            String handlerContent = params.getHandler() + "在" + sdf.format(new Date()) + ",修改了这条记录";
+            if (params.getOperation() != null) {
+                if (order.getOperation() == null) {
+
+                } else if (!order.getOperation().equals(params.getOperation())) {
+                    handlerContent += ",修改了运营人员";
+                }
+
+
+            }
+            if (params.getSalesManager() != null) {
+                if (order.getSalesManager() == null) {
+                    handlerContent += ", 修改了销售经理";
+                } else if (order.getSalesManager().equals(params.getSalesManager())) {
+                    handlerContent += ", 修改了销售经理";
+                }
+            }
+            if (params.getOrderStatus() != null) {
+                if (order.getOrderStatus() == null) {
+                    handlerContent += ",修改了订单状态";
+                } else if (order.getOrderStatus().equals(params.getOrderStatus())) {
+                    handlerContent += ",修改了订单状态";
+                }
+
+            }
+            if (params.getGrossMargin() != null) {
+                if (order.getGrossMargin() == null) {
+                    handlerContent += ", 修改了毛利";
+                } else if (order.getGrossMargin().equals(params.getGrossMargin())) {
+                    handlerContent += ", 修改了毛利";
+                }
+
+            }
+            if (params.getSellingPrice() != null) {
+                if (order.getSellingPrice() == null) {
+                    handlerContent += ",修改了总金额";
+                } else if (!order.getSellingPrice().equals(params.getSellingPrice())) {
+                    handlerContent += ",修改了总金额";
+                }
+
+            }
+            if (params.getFloorPrice() != null) {
+                if (order.getFloorPrice() == null) {
+                    handlerContent += ", 修改了底价";
+                } else if (!order.getFloorPrice().equals(params.getFloorPrice())) {
+                    handlerContent += ", 修改了底价";
+                }
+
+            }
+            if (params.getCheckInPerson() != null) {
+                if (order.getCheckInPerson() == null) {
+                    handlerContent += ",修改了入住者";
+                } else if (!order.getCheckInPerson().equals(params.getCheckInPerson())) {
+                    handlerContent += ",修改了入住者";
+                }
+
+            }
+            if (params.getCheckOutDate() != null) {
+                if (order.getCheckOutDate() == null) {
+                    handlerContent += ", 修改了退房时间";
+                } else if (!order.getCheckOutDate().equals(params.getCheckOutDate())) {
+                    handlerContent += ", 修改了退房时间";
+                }
+
+            }
+            if (params.getCheckInDate() != null) {
+                if (order.getCheckInDate() == null){
+                    handlerContent += ",修改了入住时间";
+                }else if(!order.getCheckInDate().equals(params.getCheckInDate())){
+                    handlerContent += ",修改了入住时间";
+                }
+            }
+            if (params.getChannel() != null ) {
+                if (order.getChannel() == null) {
+                    handlerContent += ", 修改了渠道";
+                } else if (!order.getCheckInDate().equals(params.getCheckInDate())) {
+                    handlerContent += ", 修改了渠道";
+                }
+                }
+                if (params.getTargetDate() != null) {
+                    if (order.getTargetDate() == null) {
+                        handlerContent += ",修改了预订日期";
+                    } else if (!order.getTargetDate().equals(params.getTargetDate())) {
+                        handlerContent += ",修改了预订日期";
+                    }
+
+                }
+                if (params.getHotelName() != null) {
+                    if (order.getHotelName() == null) {
+                        handlerContent += ", 修改了酒店名";
+                    } else if (!order.getHotelName().equals(params.getHotelName())) {
+                        handlerContent += ", 修改了酒店名";
+                    }
+
+                }
+                if (params.getOrderReference() != null) {
+                    if (order.getOrderReference() == null) {
+                        handlerContent += ", 修改了导入订单编号";
+                    } else if (!order.getOrderReference().equals(params.getOrderReference())) {
+                        handlerContent += ", 修改了导入订单编号";
+                    }
+
+                }
+                if (params.getHouseType() != null) {
+                    if (order.getHouseType() == null) {
+                        handlerContent += ", 修改了房型";
+                    } else if (!order.getHouseType().equals(params.getHouseType())) {
+                        handlerContent += ", 修改了房型";
+                    }
+
+                }
+                if (params.getInvoiceTitle() != null) {
+                    if (order.getInvoiceTitle() == null) {
+                        handlerContent += ", 修改了发票抬头";
+                    } else if (!order.getInvoiceTitle().equals(params.getInvoiceTitle())) {
+                        handlerContent += ", 修改了发票抬头";
+                    }
+                }
+                if (params.getDutyParagraph() != null) {
+                    if (order.getDutyParagraph() == null) {
+                        handlerContent += ", 修改了税号";
+                    } else if (!order.getDutyParagraph().equals(params.getDutyParagraph())) {
+                        handlerContent += ", 修改了税号";
+                    }
+
+                }
+                if (params.getDelFlag() != null) {
+                    if (order.getDelFlag() == null) {
+                        handlerContent += ", 修改了删除标志";
+                    } else if (!order.getDelFlag().equals(params.getDelFlag())) {
+                        handlerContent += ", 修改了删除标志";
+                    }
+                }
+                params.setHandlerContent(handlerContent);
+                ServerResponse response = handlerService.uploadHandler(params.getOrderId(), params.getHandler(), params.getHandlerContent());
+                return ServerResponse.createBySuccess("修改成功");
+
+            } else return ServerResponse.createByError("修改失败");
+
     }
     public ServerResponse deleteListOrder(List<String> orderIds, String userName){
         for (String orderId: orderIds){

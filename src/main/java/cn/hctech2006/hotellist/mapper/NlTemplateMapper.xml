@@ -55,7 +55,7 @@
   <select id="selectByTemplateId" parameterType="String" resultMap="BaseResultMap">
     select
         id, template_id, hotel_id, floor_price, house_type, del_flag
-    from nl_template where template_id#{templateId}
+    from nl_template where template_id=#{templateId}
   </select>
   <update id="updateByTemplateId" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
     update nl_template
@@ -73,7 +73,7 @@
           del_flag = #{delFlag,jdbcType=VARCHAR},
         </if>
           template_id = #{templateId,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=INTEGER}
+    where template_id = #{templateId,jdbcType=VARCHAR}
 
   </update>
 </mapper>

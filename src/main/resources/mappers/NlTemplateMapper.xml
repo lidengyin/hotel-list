@@ -13,10 +13,8 @@
     delete from nl_template
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
-      SELECT LAST_INSERT_ID()
-    </selectKey>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
+
     insert into nl_template (id, template_id, hotel_id, 
       floor_price, house_type, del_flag
       )
@@ -42,4 +40,37 @@
     select id, template_id, hotel_id, floor_price, house_type, del_flag
     from nl_template
   </select>
+  <select id="selectTemplateByKeyword" parameterType="list" resultMap="BaseResultMap">
+    select from nl_template where 1=1
+    <if test="hotelId != null and hotelId != ''">
+      and hotel_id=#{hotelId}
+    </if>
+    <if test="delFlag != null and delFlag != ''">
+      and del_flag = #{delFlag}
+    </if>
+  </select>
+  <select id="selectByTemplateId" parameterType="String" resultMap="BaseResultMap">
+    select
+        id, template_id, hotel_id, floor_price, house_type, del_flag
+    from nl_template where template_id=#{templateId}
+  </select>
+  <update id="updateByTemplateId" parameterType="cn.hctech2006.hotellist.bean.NlTemplate">
+    update nl_template
+        <if test="templateId != null and templateId != ''">
+          template_id = #{templateId,jdbcType=VARCHAR},
+        </if>
+        <if test="hotelId != null and hotelId != ''">
+          hotel_id = #{hotelId,jdbcType=VARCHAR},
+        </if>
+        <if test="floorPrice != null and floorPrice != ''">
+          floor_price = #{floorPrice,jdbcType=DOUBLE},
+        </if>
+        <if test="houseType != null and houseType != ''">
+          house_type = #{houseType,jdbcType=VARCHAR},
+        </if>
+        <if test="delFlag != null and delFlag != ''">
+          del_flag = #{delFlag,jdbcType=VARCHAR}
+        </if>
+    where template_id = #{templateId,jdbcType=VARCHAR}
+  </update>
 </mapper>

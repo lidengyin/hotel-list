@@ -3,6 +3,7 @@ package cn.hctech2006.hotellist.service;
 
 import cn.hctech2006.hotellist.bean.MmallUser;
 import cn.hctech2006.hotellist.common.ServerResponse;
+import org.apache.catalina.Server;
 
 import java.util.List;
 
@@ -101,4 +102,6 @@ public interface IUserService  {
      * @return
      */
     ServerResponse checkAdminRole(MmallUser user);
+
+
 }
